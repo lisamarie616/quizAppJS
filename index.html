@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>I <3 NYC</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+  <img src="images/logo.jpg" id="logo">
+
+  <div id="message">
+
+  </div>
+
+  <div id="gameBoard">
+    <div id="question">
+   	  
+    </div>
+    <div id="answers">
+      <div id="ans1"></div>
+      <div id="ans2"></div>
+      <div id="ans3"></div>
+    </div>
+    <div id="centersc">
+      <div id="score">
+        <div id="scq1">Q1</div>
+  	    <div id="scq2">Q2</div>
+  	    <div id="scq3">Q3</div>
+  	    <div id="scq4">Q4</div>
+  	    <div id="scq5">Q5</div>
+  	<!--    <div id="complete"><p>SCORE <br />0</p></div> -->
+      </div>
+    </div>
+  </div>
+  
+
+<script type="text/javascript">
+//adds initial message elements
+document.getElementById("message").innerHTML += "<h1 id='msgh1'>" + "NYC Quiz" + "</h1>" + "<h2 id='msgh2'>" + "How much do you know about New York City?" + "</h2>" + "<input type='submit' value='Continue' id='contGame'>"
+
+document.getElementById("contGame").addEventListener("click", startGame)
+
+function startGame() {
+  toggleGameBoard();
+  playGame();
+}
+
+//changes elements displayed from message div to gameBoard div
+function toggleGameBoard() {
+  document.getElementById("message").style.display="none";
+  document.getElementById("gameBoard").style.display="inline";
+}
+
+//changes elements displayed from gameBoard div to message div
+function toggleMessage() {
+  document.getElementById("message").style.display="inline";
+  document.getElementById("gameBoard").style.display="none"; 
+}
+
+//creates question objects
+var statueLib = {
+  quest: "Which country gifted the Statue of Liberty to the US?",
+  0: "England",
+  1: "Canada",
+  2: "France",
+}
+
+var tallBuild = {
+  quest: "What is the tallest building in New York?",
+  0: "Freedom Tower",
+  1: "Chrysler Building",
+  2: "Empire State",
+}
+
+var cityName = {
+  quest: "How many boroughs does New York City have?",
+  0: "4",
+  1: "5",
+  2: "6",
+}
+
+var basketball = {
+  quest: "Which basketball team calls Manhattan home?",
+  0: "Nets",
+  1: "Knicks",
+  2: "Pacers",
+}
+
+var island = {
+  quest: "Which island can be found between Manhattan and Queens?",
+  0: "Fire Island",
+  1: "Coney Island",
+  2: "Roosevelt Island",
+}
+
+//creates arrays for loops
+ansElements = ["ans1", "ans2", "ans3"];
+scoreElements = ["scq1", "scq2", "scq3", "scq4", "scq5"];
+questObjs = [statueLib, tallBuild, cityName, basketball, island];
+
+var counter = 0;
+var userScore = 0;
+
+//game function
+function playGame() {
+  var playing = true;
+
+  //removes message elements
+  var parent = document.getElementById("message");
+  var child = document.getElementById("msgh1");
+  parent.removeChild(child);
+  var parent = document.getElementById("message");
+  var child = document.getElementById("msgh2");
+  parent.removeChild(child);
+  var parent = document.getElementById("message");
+  var child = document.getElementById("contGame");
+  parent.removeChild(child);
+
+  //ends game after question 5
+  if (counter === 5) {
+    playing = false;
+    document.getElementById("message").innerHTML += "<h1 id='msgh1'>" + "You scored " + userScore + "</h1>" + "<h2 id='msgh2'>" + "Thanks for playing!" + "</h2>"
+    document.getElementById("message").style.background="rgba(255, 0, 0, 0.8)"
+    toggleMessage();
+  }
+
+  if (playing) {  
+    toggleGameBoard();
+    document.getElementById("score").innerHTML += "<div id='complete'>" + "<p>" + "SCORE " + "<br />" + userScore + "</p>" + "</div>"
+
+    //populates question element with text
+    document.getElementById("question").innerHTML += "<h1 id='questh1'>" + questObjs[counter].quest + "</h1>";
+    //populates answer elements with text
+    for (var i = 0; i < ansElements.length; i++) {
+        document.getElementById(ansElements[i]).innerHTML += "<p class='ansp'>" + questObjs[counter][i] + "</p>";    
+    }
+    //makes score element yellow on current question
+    document.getElementById(scoreElements[counter]).style.background="#FFFF00";
+
+    //adds event listeners on first iteration of playGame()
+    if (counter === 0) {
+      document.getElementById("ans1").addEventListener("click", reveal1)
+      document.getElementById("ans2").addEventListener("click", reveal2)
+      document.getElementById("ans3").addEventListener("click", reveal3)
+    }
+
+    //each function below changes score element color and returns correct() or incorrect() based on whether answer was right or wrong
+    function reveal1() {
+      if(counter === 1) {
+        var result = true;
+      }
+      if(result) {
+        colorRight();
+      } else {
+        colorWrong();
+      }
+    } 
+
+    function reveal2() {
+      if(counter === 2 || counter === 3) {
+        var result = true;
+      }
+      if(result) {
+        colorRight();
+      } else {
+        colorWrong();
+      }
+    } 
+
+    function reveal3() {
+      if(counter === 0 || counter === 4) {
+        var result = true;
+      }
+      if(result) {
+        colorRight();
+      } else {
+        colorWrong();
+      }
+    }
+
+    function colorRight() {
+        document.getElementById(scoreElements[counter]).style.background="#008000";
+        return correct();
+    }
+
+    function colorWrong() {
+        document.getElementById(scoreElements[counter]).style.background="#FF0000";
+        return incorrect();
+    } 
+
+    //populates message elements and changes elements displayed from gameBoard div to message div
+    function correct() {
+      document.getElementById("message").innerHTML += "<h1 id='msgh1'>" + "That's correct!" + "</h1>" + "<h2 id='msgh2'>" + "Hit Continue" + "</h2>" + "<input type='submit' value='Continue' id='contGame'>"
+      document.getElementById("contGame").addEventListener("click", playGame)
+      toggleMessage();
+      document.getElementById("message").style.background="#008000";
+      removeElements();
+      counter += 1;
+      userScore += 1;
+    }
+
+    function incorrect() {
+      document.getElementById("message").innerHTML += "<h1 id='msgh1'>" + "Sorry, that is incorrect" + "</h1>" + "<h2 id='msgh2'>" + "Hit Continue" + "</h2>" + "<input type='submit' value='Continue' id='contGame'>"
+      document.getElementById("contGame").addEventListener("click", playGame)
+      toggleMessage();
+      document.getElementById("message").style.background="#FF0000";
+      removeElements();
+      counter += 1;
+    }
+
+    //removes question and answer elements in preparation for next question
+    function removeElements() {
+      var parent = document.getElementById("question");
+      var child = document.getElementById("questh1");
+      parent.removeChild(child);    
+      var elements = document.getElementsByClassName("ansp");
+        while(elements.length > 0){
+        elements[0].parentNode.removeChild(elements[0]);
+        }
+      var parent = document.getElementById("score");
+      var child = document.getElementById("complete");
+      parent.removeChild(child);
+    }
+  }
+}
+
+
+</script>
+
+</body>
+</html>
